@@ -2,100 +2,83 @@ import './styles.scss';
 
 import { MoonLoader } from 'halogenium';
 import * as React from 'react';
-import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
-import { currencyFormatter } from './formatter'
 
-const generateData = (count: number) => {
-  return new Array(count).fill(null).reduce((pr) => {
-    return [
-      ...pr, Math.max(pr[pr.length - 1] + (Math.random() * 30 - 15.2), 1)
-    ]
-  }, [100]).map((v: number) => ({ high: v }))
-}
+import LineChart from './components/LineChart';
+import { currencyFormatter } from './formatter';
 
-const Package: React.FC = () => {
-  const [loading, setLoading] = React.useState(true)
-  const [data, setData] = React.useState(generateData(150))
+import type { RootProps, DataPoint } from './types';
+export { RootProps, DataPoint };
 
-  React.useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500)
-  }, [])
+const Package: React.FC<RootProps> = ({
+  data,
+  loading,
+  onRange,
+  range = 15,
+  stockName,
+}) => {
+  const onSetRange = React.useCallback((v) => {
+    onRange?.(v)
+  }, [onRange])
 
-  const regenerate = React.useCallback(() => {
-    setData(generateData(150))
-  }, [setData])
+  const [activePrice, setActivePrice] = React.useState<string | null>(null)
+  const maxPrice = currencyFormatter.format(data?.[data.length - 1]?.high || 0)
 
+  const onDataHover = React.useCallback((v: number | null) => {
+    if (v) {
+      setActivePrice(currencyFormatter.format(v))
+    } else {
+      setActivePrice(null)
+    }
+  }, [setActivePrice])
 
-  // [100, 200, 120, 210, 220, 180].map(v => ({ high: v }));
-  const max = data.reduce((a: number, b: number) => Math.max(a, b), 0);
-  const min = data.reduce((a: number, b: number) => Math.min(a, b), 0);
-  // const price = `$${this.props.price}`;
-  const price = currencyFormatter.format(data[data.length - 1].high)
-  const ranges = ['1D', '1M', '3M', '1Y', '2Y', '5Y'];
-  const rangeButtons = ranges.map((range: string, i) => {
+  const ranges = [
+    { label: '1D', value: 15 },
+    { label: '1W', value: 60 },
+    { label: '1M', value: 15 * 32 },
+    { label: '3M', value: 15 * 96 },
+  ];
+
+  const rangeButtons = ranges.map((r, i) => {
     return <button
       key={i}
-      onClick={regenerate}
-      className="range-buttons"
+      className={`range-buttons ${range === r.value ? 'selected' : ''}`}
+      onClick={() => onSetRange(r.value)}
     >
-      {range}
+      {r.label}
     </button>
   });
 
+  if (loading) {
+    return (
+      <div className="sparkline-chart">
+        <MoonLoader
+          className="loading-icon"
+          color="#26A65B"
+          size="20px"
+        />
+      </div>
+    )
+  }
 
   return (
-    <div className="sparkline-chart">{
-      loading ?
-        <div>
-          <MoonLoader
-            className="loading-icon"
-            color="#26A65B"
-            size="20px"
-          />
-        </div>
-        :
-
-
-        <div className="stock-chart">
-
-          <div className="chart">
-            <div className="chart-header">
-              <ul className="tags">
-                <li className="tag">Computer Hardware</li>
-                <li className="tag">100 Most Popular</li>
-                <li className="tag">Computer Software</li>
-              </ul>
-              <h1 className="company-name">Apple</h1>
-              <div className="stock-chart-price">{price}</div>
-              <div className="percent-change">
-                <span className="range"></span>
-              </div>
+    <div className="sparkline-chart">
+      <div className="stock-chart">
+        <div className="chart">
+          <div className="chart-header">
+            <h1 className="company-name">{stockName}</h1>
+            <div className="stock-chart-price">{activePrice || maxPrice}</div>
+            <div className="percent-change">
+              <span className="range"></span>
             </div>
           </div>
-
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={data} margin={{ top: 25, bottom: 25 }} >
-              <Line
-                type="linear"
-                dataKey="high"
-                strokeWidth={2} stroke="#21ce99"
-                dot={false}
-                isAnimationActive={true}
-              />
-
-              <YAxis
-                hide={true}
-                domain={[min, max]}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="button-list">
-            <ul>{rangeButtons}</ul>
-          </div>
-        </div>}
-    </div>)
+        </div>
+        <LineChart onDataHover={onDataHover} data={data || []} />
+        <div className="button-list">
+          <ul>{rangeButtons}</ul>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Package

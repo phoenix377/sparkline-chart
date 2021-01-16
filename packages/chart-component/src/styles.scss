@@ -40,10 +40,13 @@
     margin-right: 10px;
     font-size: 14px;
     outline: none;
+    &.selected {
+      color: $tag-text;
+    }
   }
 
   .range-buttons:hover {
-    color: rgb(33, 106, 153);
+    color: $tag-text;
     cursor: pointer;
   }
 
