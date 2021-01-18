@@ -1,8 +1,9 @@
 import './styles.scss';
 
 import { MoonLoader } from 'halogenium';
-import * as React from 'react';
+import React from 'react';
 
+import DigitRoll from './components/Digit';
 import LineChart from './components/LineChart';
 import { currencyFormatter } from './formatter';
 
@@ -66,7 +67,10 @@ const Package: React.FC<RootProps> = ({
         <div className="chart">
           <div className="chart-header">
             <h1 className="company-name">{stockName}</h1>
-            <div className="stock-chart-price">{activePrice || maxPrice}</div>
+            {/* <div className="stock-chart-price">{activePrice || maxPrice}</div> */}
+            <div className="stock-chart-price">
+              <span>$</span><DigitRoll num={activePrice || maxPrice} divider="." className="" />
+            </div>
             <div className="percent-change">
               <span className="range"></span>
             </div>

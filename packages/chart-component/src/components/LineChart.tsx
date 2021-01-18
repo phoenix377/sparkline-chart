@@ -31,9 +31,10 @@ const Package: React.FC<Props> = ({ data, onDataHover }) => {
           strokeWidth={2}
           stroke="#21ce99"
           dot={false}
+          activeDot={{ stroke: 'black', strokeWidth: 2, r: 5 }}
           isAnimationActive={true}
         />
-        <Tooltip />
+        <Tooltip content={<div></div>} />
         <YAxis
           hide={true}
           domain={[min, max]}

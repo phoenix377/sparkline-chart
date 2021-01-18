@@ -19,7 +19,7 @@ const mapper = (data?: HistoryResponse | null): DataPoint[] | null => {
   }
   const temp = Object.keys(data?.history || {}).map(p => {
     const [open, high, low, close, volume] = data?.history?.[p] || [];
-    return { open, high, low, close, volume, date: parseInt(p) } as DataPoint;
+    return { open, high: high, low, close, volume, date: parseInt(p) } as DataPoint;
   })
 
   return temp
