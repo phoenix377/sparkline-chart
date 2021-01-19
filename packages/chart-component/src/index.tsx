@@ -69,7 +69,7 @@ const Package: React.FC<RootProps> = ({
             <h1 className="company-name">{stockName}</h1>
             {/* <div className="stock-chart-price">{activePrice || maxPrice}</div> */}
             <div className="stock-chart-price">
-              <span>$</span><DigitRoll num={activePrice || maxPrice} divider="." className="" />
+              <div className="stock-chart-price--currency">$</div><DigitRoll num={activePrice || maxPrice} />
             </div>
             <div className="percent-change">
               <span className="range"></span>

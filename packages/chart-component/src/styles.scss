@@ -67,6 +67,13 @@
   }
 
   .stock-chart-price {
+    &--currency {
+      width: 1.25rem;
+      height: 3rem;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
     font-size: 36px;
     font-weight: 400;
     letter-spacing: -0.7px;
