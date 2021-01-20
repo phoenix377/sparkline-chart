@@ -26,7 +26,7 @@ const mapper = (data?: HistoryResponse | null): DataPoint[] | null => {
 }
 
 function App() {
-  const [range, setRange] = React.useState<number>(15)
+  const [range, setRange] = React.useState<number>(60)
 
   const { data, loading } = useFetch<HistoryResponse>(`https://keyvanafunctions.azurewebsites.net/api/GetItemHistory?interval=${range}&item=SWC`)
 

@@ -5,7 +5,7 @@ import React from 'react';
 
 import DigitRoll from './components/Digit';
 import LineChart from './components/LineChart';
-import { currencyFormatter } from './formatter';
+import { currencyFormatter, number2Formatter } from './formatter';
 
 import type { RootProps, DataPoint } from './types';
 export { RootProps, DataPoint };
@@ -22,13 +22,17 @@ const Package: React.FC<RootProps> = ({
   }, [onRange])
 
   const [activePrice, setActivePrice] = React.useState<string | null>(null)
-  const maxPrice = currencyFormatter.format(data?.[data.length - 1]?.high || 0)
+  const [activePriceRaw, setActivePriceRaw] = React.useState<number | null>(null)
+  const maxPriceRaw: number = data?.[data.length - 1]?.high || 0
+  const maxPrice = currencyFormatter.format(maxPriceRaw)
 
   const onDataHover = React.useCallback((v: number | null) => {
     if (v) {
       setActivePrice(currencyFormatter.format(v))
+      setActivePriceRaw(v)
     } else {
       setActivePrice(null)
+      setActivePriceRaw(null)
     }
   }, [setActivePrice])
 
@@ -61,6 +65,15 @@ const Package: React.FC<RootProps> = ({
     )
   }
 
+  let difference: string | null = null
+  const differenceRaw = (activePriceRaw || maxPriceRaw) - maxPriceRaw
+  const differencePercentRaw = ((activePriceRaw || maxPriceRaw) / maxPriceRaw * 100) - 100
+  const differencePercent = `${differencePercentRaw > 0 ? '+' : ''}${number2Formatter.format(differencePercentRaw)}%`
+  difference = `${currencyFormatter.format(differenceRaw)} (${differencePercent})`
+  if (!difference.startsWith('-') && differenceRaw) {
+    difference = `+${difference}`
+  }
+
   return (
     <div className="sparkline-chart">
       <div className="stock-chart">
@@ -71,12 +84,15 @@ const Package: React.FC<RootProps> = ({
             <div className="stock-chart-price">
               <div className="stock-chart-price--currency">$</div><DigitRoll num={activePrice || maxPrice} />
             </div>
+            <div className="">
+              <span>{difference}</span>
+            </div>
             <div className="percent-change">
               <span className="range"></span>
             </div>
           </div>
         </div>
-        <LineChart onDataHover={onDataHover} data={data || []} />
+        <LineChart onDataHover={onDataHover} data={data || []} days={range === 60} />
         <div className="button-list">
           <ul>{rangeButtons}</ul>
         </div>
