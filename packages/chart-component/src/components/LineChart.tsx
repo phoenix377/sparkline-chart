@@ -1,77 +1,83 @@
-import { curveBasis } from 'd3-shape';
-import moment from 'moment';
-import findIndex from 'ramda/src/findIndex';
-import findLastIndex from 'ramda/src/findLastIndex';
-import * as React from 'react';
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import moment from 'moment'
+import findIndex from 'ramda/src/findIndex'
+import findLastIndex from 'ramda/src/findLastIndex'
+import * as React from 'react'
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { numberFormatter } from '../formatter';
+import { numberFormatter } from '../formatter'
+import { avgLine, chartLine, fillDay } from './chartUtils'
+import CustomizedCursor from './CustomizedCursor'
 
-import type { DataPoint } from '../types';
-
-const chartLine = (dataKey = "high", stroke = "#21ce99") => ({
-  activeDot: { stroke: 'black', fill: '#21ce99', strokeWidth: 2, r: 5 },
-  connectNulls: true,
-  dataKey,
-  dot: false,
-  isAnimationActive: true,
-  stroke,
-  strokeDasharray: "",
-  strokeWidth: 2,
-  type: curveBasis,
-})
-
-const avgLine = (dataKey = "avg") => ({
-  activeDot: false,
-  connectNulls: true,
-  dataKey,
-  dot: false,
-  isAnimationActive: false,
-  stroke: "#4e4e4e",
-  strokeDasharray: "2 6",
-  strokeWidth: 2,
-  type: 'monotone',
-})
-
+import type { DataPoint } from '../types'
 
 type Props = {
   data: DataPoint[]
 
+  range?: number | null
   onDataHover?: (value: number | null) => void
   days?: boolean
+  closePrice?: number | null
 }
 
-const Package: React.FC<Props> = ({ data, onDataHover, days }) => {
-  const [periodStart, setPeriodStart] = React.useState(0);
-  const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100);
+const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) => {
+  const [periodStart, setPeriodStart] = React.useState(0)
+  const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100)
 
-  const max = +numberFormatter.format(data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) * 1.02);
-  const min = +numberFormatter.format(data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) * 0.98);
-  const avg = +numberFormatter.format(data.reduce((sum, current) => (sum + current.high), 0) / data.length);
+  const max = +numberFormatter.format(
+    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) * 1.02
+  )
+  const min = +numberFormatter.format(
+    data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) * 0.98
+  )
 
-  const dataWAvg = data.map((d, idx) => ({ ...d, avg, idx }))
+  let dataWAvg = data.map((d, idx) => ({ ...d, closePrice, idx }))
+
+  if (range === 15 && dataWAvg.length < 96) {
+    dataWAvg = fillDay(dataWAvg, closePrice)
+  }
 
   const lines: any[] = []
 
+  if (closePrice) {
+    lines.push(avgLine())
+  }
+
   lines.push(chartLine('high', 'url(#colorUv)'))
-  lines.push(avgLine())
 
   React.useEffect(() => {
     setPeriodStart(0)
     setPeriodEnd(days ? 0 : 100)
   }, [days])
 
-  const onMove = React.useCallback((e: any) => {
-    onDataHover?.(e?.activePayload?.[0]?.value || null)
-    if (days) {
-      const initial = moment(e?.activePayload?.[0]?.payload?.date * 1000).startOf('day').unix()
-      const firstIndex: number = findIndex((d: DataPoint) => moment(d.date * 1000).startOf('day').unix() === initial, dataWAvg)
-      const lastIndex: number = findLastIndex((d: DataPoint) => moment(d.date * 1000).startOf('day').unix() === initial, dataWAvg)
+  const onMove = React.useCallback(
+    (e: any) => {
+      const payload = e?.activePayload?.find((p) => p.name === 'high')
+      onDataHover?.(payload?.value || null)
+      if (days) {
+        const initial = moment(e?.activePayload?.[0]?.payload?.date * 1000)
+          .startOf('day')
+          .unix()
+        const firstIndex: number = findIndex(
+          (d: DataPoint) =>
+            moment(d.date * 1000)
+              .startOf('day')
+              .unix() === initial,
+          dataWAvg
+        )
+        const lastIndex: number = findLastIndex(
+          (d: DataPoint) =>
+            moment(d.date * 1000)
+              .startOf('day')
+              .unix() === initial,
+          dataWAvg
+        )
 
-      setPeriodStart(100 - ((dataWAvg.length - firstIndex - 1) * 100 / (dataWAvg.length - 1)))
-      setPeriodEnd(100 - ((dataWAvg.length - lastIndex - 1) * 100 / (dataWAvg.length - 1)))
-    }
-  }, [dataWAvg, onDataHover, setPeriodStart, setPeriodEnd, days])
+        setPeriodStart(100 - ((dataWAvg.length - firstIndex - 1) * 100) / (dataWAvg.length - 1))
+        setPeriodEnd(100 - ((dataWAvg.length - lastIndex - 1) * 100) / (dataWAvg.length - 1))
+      }
+    },
+    [dataWAvg, onDataHover, setPeriodStart, setPeriodEnd, days]
+  )
 
   const onLeave = React.useCallback(() => {
     onDataHover?.(null)
@@ -87,6 +93,8 @@ const Package: React.FC<Props> = ({ data, onDataHover, days }) => {
         data={dataWAvg}
         margin={{ top: 25, bottom: 25 }}
       >
+        <Tooltip cursor={<CustomizedCursor range={range} />} content={<div />} />
+
         <defs>
           <linearGradient id="colorUv" x1="0%" y1="0" x2="100%" y2="0">
             <stop offset={`${0}%`} stopColor="#0e5c43" />
@@ -97,21 +105,14 @@ const Package: React.FC<Props> = ({ data, onDataHover, days }) => {
             <stop offset={`${100}%`} stopColor="#0e5c43" />
           </linearGradient>
         </defs>
-        {lines.map(line => (
-          <Line {...line as any} />
+        {lines.map((line, idx) => (
+          <Line key={idx} {...(line as any)} />
         ))}
-        <Tooltip content={<div></div>} />
-        <XAxis
-          hide={true}
-          dataKey={'date'}
-        />
-        <YAxis
-          hide={true}
-          domain={[min, max]}
-        />
+        <XAxis hide dataKey="date" />
+        <YAxis hide domain={[min, max]} />
       </LineChart>
     </ResponsiveContainer>
   )
 }
 
-export default Package
+export default Chart

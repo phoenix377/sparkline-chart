@@ -11,6 +11,8 @@ export type RootProps = {
   data: DataPoint[]
   stockName: string
 
+  candlestick?: boolean
+  closePrice?: number
   loading?: boolean
   onRange?: (range: number) => any | Promise<any>
   range?: number
