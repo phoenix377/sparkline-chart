@@ -34,38 +34,24 @@ const mapper = (data?: HistoryResponse | null): DataPoint[] | null => {
 
 function App() {
   const [range, setRange] = React.useState<number>(60);
-  const [type, setType] = React.useState<string>("Line");
-  const [closePrice] = React.useState<number>(0.77);
+  const [isCandlestick, setIsCandlestick] = React.useState<boolean>(false);
 
-  const { data, loading } = useFetch<HistoryResponse>(
+  const { data } = useFetch<HistoryResponse>(
     `https://keyvanafunctions.azurewebsites.net/api/GetItemHistory?interval=${range}&item=SWC`
   );
 
+  const mappedData = mapper(data) || [];
+
   return (
     <div className="App">
-      <div className="select-container">
-        <button
-          type="button"
-          className={`select-button ${type === "Line" ? "selected" : ""}`}
-          onClick={() => setType("Line")}
-        >
-          Line
-        </button>
-        <button
-          type="button"
-          className={`select-button ${type === "Candlestick" ? "selected" : ""}`}
-          onClick={() => setType("Candlestick")}
-        >
-          Candlestick
-        </button>
-      </div>
       <SparklineChart
-        candlestick={type === "Candlestick"}
+        candlestick={isCandlestick}
+        onCandlestick={setIsCandlestick}
         stockName={"SWC"}
-        data={mapper(data) || []}
+        data={mappedData}
         range={range}
         onRange={setRange}
-        closePrice={closePrice}
+        closePrice={mappedData?.[0]?.close}
       />
     </div>
   );

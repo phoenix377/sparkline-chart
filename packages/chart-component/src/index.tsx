@@ -18,6 +18,7 @@ const Package: React.FC<RootProps> = ({
   onRange,
   stockName,
   candlestick,
+  onCandlestick,
   range = 15,
   closePrice = 0,
 }) => {
@@ -30,8 +31,17 @@ const Package: React.FC<RootProps> = ({
 
   const [activePrice, setActivePrice] = React.useState<string | null>(null)
   const [activePriceRaw, setActivePriceRaw] = React.useState<number | null>(null)
+  const [isCandlestick, setIsCandlestick] = React.useState<boolean>(candlestick || false)
   const maxPriceRaw: number = data?.[data.length - 1]?.high || 0
   const maxPrice = currencyFormatter.format(maxPriceRaw)
+
+  const changeType = React.useCallback(
+    (isC) => {
+      setIsCandlestick(isC)
+      onCandlestick?.(isC)
+    },
+    [setIsCandlestick, onCandlestick]
+  )
 
   const onDataHover = React.useCallback(
     (v: number | null) => {
@@ -66,6 +76,25 @@ const Package: React.FC<RootProps> = ({
     )
   })
 
+  const typeButtons = (
+    <>
+      <button
+        type="button"
+        className={`range-buttons ${!isCandlestick ? 'selected' : ''}`}
+        onClick={() => changeType(false)}
+      >
+        Line
+      </button>
+      <button
+        type="button"
+        className={`range-buttons ${isCandlestick ? 'selected' : ''}`}
+        onClick={() => changeType(true)}
+      >
+        Candlestick
+      </button>
+    </>
+  )
+
   if (loading) {
     return (
       <div className="sparkline-chart">
@@ -76,7 +105,7 @@ const Package: React.FC<RootProps> = ({
 
   const difference = getDifference(activePriceRaw, maxPriceRaw, closePrice)
 
-  const chart = candlestick ? (
+  const chart = isCandlestick ? (
     <CandlestickChart onDataHover={onDataHover} data={data || []} />
   ) : (
     <LineChart
@@ -110,7 +139,8 @@ const Package: React.FC<RootProps> = ({
         {chart}
 
         <div className="button-list">
-          <ul>{rangeButtons}</ul>
+          <div>{rangeButtons}</div>
+          <div>{typeButtons}</div>
         </div>
       </div>
     </div>

@@ -10,14 +10,13 @@ export const dateFormat = (range: number) => {
   }
 }
 
-export const fillDay = (initial, closePrice) => {
+export const fillDay = (initial) => {
   const dataWAvg = [...initial]
   const lastDate = dataWAvg[dataWAvg.length - 1].date
   let i = 1
   while (dataWAvg.length < 96) {
     dataWAvg.push({
       date: lastDate + 900 * i,
-      closePrice,
     } as any)
     i += 1
   }
@@ -32,7 +31,7 @@ export const chartLine = (dataKey = 'high', stroke = '#21ce99') => ({
   stroke,
   strokeDasharray: '',
   strokeWidth: 2,
-  type: 'basis',
+  type: 'monotone',
 })
 
 export const avgLine = (dataKey = 'closePrice') => ({
@@ -41,12 +40,12 @@ export const avgLine = (dataKey = 'closePrice') => ({
   dataKey,
   dot: false,
   stroke: '#4e4e4e',
-  strokeDasharray: '2 5',
+  strokeDasharray: '2 6',
   strokeWidth: 2,
   type: 'monotone',
 })
 
-export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave }) => {
+export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave, min, max }) => {
   return {
     chart: {
       events: {
@@ -61,10 +60,9 @@ export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave
       zoom: {
         enabled: false,
       },
-      grid: {
-        show: false,
-        borderColor: '#90A4AE',
-      },
+    },
+    grid: {
+      show: false,
     },
     tooltip: {
       enabled: true,
@@ -82,6 +80,11 @@ export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave
       type: 'datetime',
     },
     yaxis: {
+      min,
+      max,
+      axisBorder: {
+        show: false,
+      },
       tooltip: {
         enabled: true,
       },

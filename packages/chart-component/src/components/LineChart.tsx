@@ -2,10 +2,11 @@ import moment from 'moment'
 import findIndex from 'ramda/src/findIndex'
 import findLastIndex from 'ramda/src/findLastIndex'
 import * as React from 'react'
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Customized, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { numberFormatter } from '../formatter'
 import { avgLine, chartLine, fillDay } from './chartUtils'
+import ClosePriceLine from './ClosePriceLine'
 import CustomizedCursor from './CustomizedCursor'
 
 import type { DataPoint } from '../types'
@@ -23,17 +24,22 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
   const [periodStart, setPeriodStart] = React.useState(0)
   const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100)
 
-  const max = +numberFormatter.format(
+  let max = +numberFormatter.format(
     data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) * 1.02
   )
-  const min = +numberFormatter.format(
+  let min = +numberFormatter.format(
     data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) * 0.98
   )
 
-  let dataWAvg = data.map((d, idx) => ({ ...d, closePrice, idx }))
+  if (closePrice) {
+    min = Math.min(min, closePrice)
+    max = Math.max(max, closePrice)
+  }
+
+  let dataWAvg = data.map((d, idx) => ({ ...d, idx }))
 
   if (range === 15 && dataWAvg.length < 96) {
-    dataWAvg = fillDay(dataWAvg, closePrice)
+    dataWAvg = fillDay(dataWAvg)
   }
 
   const lines: any[] = []
@@ -55,11 +61,13 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
       onDataHover?.(payload?.value || null)
       if (days) {
         const initial = moment(e?.activePayload?.[0]?.payload?.date * 1000)
+          .utc()
           .startOf('day')
           .unix()
         const firstIndex: number = findIndex(
           (d: DataPoint) =>
             moment(d.date * 1000)
+              .utc()
               .startOf('day')
               .unix() === initial,
           dataWAvg
@@ -67,6 +75,7 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
         const lastIndex: number = findLastIndex(
           (d: DataPoint) =>
             moment(d.date * 1000)
+              .utc()
               .startOf('day')
               .unix() === initial,
           dataWAvg
@@ -93,8 +102,8 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
         data={dataWAvg}
         margin={{ top: 25, bottom: 25 }}
       >
-        <Tooltip cursor={<CustomizedCursor range={range} />} content={<div />} />
-
+        {closePrice ? <Customized value={closePrice} component={ClosePriceLine} /> : null}
+        <Tooltip cursor={<CustomizedCursor range={range} stroke="#777" />} content={<div />} />
         <defs>
           <linearGradient id="colorUv" x1="0%" y1="0" x2="100%" y2="0">
             <stop offset={`${0}%`} stopColor="#0e5c43" />

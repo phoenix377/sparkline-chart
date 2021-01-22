@@ -12,6 +12,7 @@ export type RootProps = {
   stockName: string
 
   candlestick?: boolean
+  onCandlestick?: (isCandlestick: boolean) => any | Promise<any>
   closePrice?: number
   loading?: boolean
   onRange?: (range: number) => any | Promise<any>
