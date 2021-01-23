@@ -1,12 +1,33 @@
+import moment from 'moment'
+
+import { Colors, DateFormats, DAY, HOUR, MINUTE, Periods, POINTS_PER_DAY } from '../constants'
+
 export const dateFormat = (range: number) => {
   switch (range) {
-    case 15:
-      return 'LLL'
-    case 60:
-    case 480:
-      return 'MMM D, LT'
+    case Periods.ONE_DAY:
+      return DateFormats.LT
+    case Periods.ONE_WEEK:
+    case Periods.ONE_MONTH:
+      return DateFormats.MDLT
     default:
-      return 'MMM D, YYYY'
+      return DateFormats.MDY
+  }
+}
+
+export const minimalUnit = (range: number) => {
+  switch (range) {
+    case Periods.ONE_DAY:
+      return HOUR / 4
+    case Periods.ONE_WEEK:
+      return DAY / 2
+    case Periods.ONE_MONTH:
+      return 2 * DAY
+    case Periods.THREE_MONTH:
+      return 1 * DAY
+    case Periods.ALL:
+      return 1 * DAY
+    default:
+      return 0
   }
 }
 
@@ -14,17 +35,22 @@ export const fillDay = (initial) => {
   const dataWAvg = [...initial]
   const lastDate = dataWAvg[dataWAvg.length - 1].date
   let i = 1
-  while (dataWAvg.length < 96) {
+  while (dataWAvg.length < POINTS_PER_DAY) {
     dataWAvg.push({
-      date: lastDate + 900 * i,
+      date: lastDate + MINUTE * 15 * i,
     } as any)
     i += 1
   }
   return dataWAvg
 }
 
-export const chartLine = (dataKey = 'high', stroke = '#21ce99') => ({
-  activeDot: { stroke: '#1b1b1d', fill: '#21ce99', strokeWidth: 2, r: 7 },
+export const chartLine = (
+  dataKey = 'high',
+  stroke: string = Colors.LINE_CHART,
+  dotStroke: string = Colors.DOT_BLACK_STROKE,
+  dotColor = Colors.LINE_CHART
+) => ({
+  activeDot: { stroke: dotStroke, fill: dotColor, strokeWidth: 2, r: 7 },
   connectNulls: true,
   dataKey,
   dot: false,
@@ -45,15 +71,25 @@ export const avgLine = (dataKey = 'closePrice') => ({
   type: 'monotone',
 })
 
-export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave, min, max }) => {
+export const getCandlestickOptions = ({
+  endDate,
+  height = 260,
+  max,
+  min,
+  onIndexHover,
+  range,
+  startDate,
+}) => {
   return {
     chart: {
       events: {
-        dataPointMouseEnter,
-        dataPointMouseLeave,
+        mouseMove(_event, _chartContext, config) {
+          onIndexHover(config.dataPointIndex)
+        },
       },
       type: 'candlestick',
-      height: 260,
+      height,
+      width: '90%',
       toolbar: {
         show: false,
       },
@@ -66,28 +102,33 @@ export const getCandlestickOptions = ({ dataPointMouseEnter, dataPointMouseLeave
     },
     tooltip: {
       enabled: true,
-      followCursor: true,
+      followCursor: false,
       shared: false,
       custom: () => '<div></div>',
-      marker: {
-        show: false,
-      },
     },
     markers: {
       size: 1,
     },
     xaxis: {
+      min: startDate,
+      max: endDate,
       type: 'datetime',
-    },
-    yaxis: {
-      min,
-      max,
-      axisBorder: {
-        show: false,
-      },
       tooltip: {
         enabled: true,
+        formatter: (date) => {
+          return moment.unix(date).utc().format(dateFormat(range))
+        },
       },
+    },
+    yaxis: {
+      show: false,
+      min,
+      max,
+      decimalsInFloat: 3,
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      labels: { show: false },
+      tooltip: { enabled: true },
     },
   }
 }

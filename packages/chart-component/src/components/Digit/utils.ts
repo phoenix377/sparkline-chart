@@ -1,4 +1,3 @@
-// 456,6,',' => '000,456'
 export const formatDigit = (num: string | number) => {
   let temp = num.toString()
 

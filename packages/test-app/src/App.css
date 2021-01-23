@@ -1,7 +1,38 @@
 .App {
+  position: relative;
+  color: black;
+}
+
+.App.dark {
+  color: white;
   background-color: #1b1b1d;
 }
 
 body {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+body.dark {
   background-color: #1b1b1d;
+}
+
+.light-switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1rem;
+  height: 4rem;
+}
+
+.light-switch {
+  display: flex;
+  align-items: center;
+}
+
+.light-switch span {
+  margin-right: 0.5rem;
 }

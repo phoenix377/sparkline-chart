@@ -12,10 +12,31 @@
   $tag-background: #182b27;
   $tag-text: #21ce99;
 
+  .toggle-candle {
+    display: flex;
+    align-items: center;
+    span {
+      margin-right: 0.5rem;
+    }
+  }
+
   .button-list {
     display: flex;
     justify-content: space-between;
     padding: 0 1rem;
+  }
+
+  .apexcharts-xaxistooltip {
+    top: 0 !important;
+    color: #ccc !important;
+    background: none !important;
+    border: none !important;
+    &:after {
+      display: none;
+    }
+    &:before {
+      display: none;
+    }
   }
 
   .candlestick {
@@ -54,12 +75,12 @@
     font-size: 14px;
     outline: none;
     &.selected {
-      color: $tag-text;
+      color: $tag-text !important;
     }
   }
 
   .range-buttons:hover {
-    color: $tag-text;
+    color: $tag-text !important;
     cursor: pointer;
   }
 
@@ -96,7 +117,6 @@
   .stock-chart {
     margin: 2%;
     padding: 2%;
-    border-bottom: $border;
     -webkit-transition: border-bottom 2s ease-out;
     -moz-transition: border-bottom 2s ease-out;
     -o-transition: border-bottom 2s ease-out;
@@ -139,5 +159,16 @@
     max-width: 497px;
     letter-spacing: -0.29px;
     line-height: 42px;
+  }
+}
+
+.sparkline-chart.light {
+  $background-color: white;
+  $color: black;
+  background-color: $background-color;
+  color: $color;
+
+  .range-buttons {
+    color: $color;
   }
 }

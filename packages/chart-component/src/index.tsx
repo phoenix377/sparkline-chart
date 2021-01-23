@@ -2,19 +2,23 @@ import './styles.scss'
 
 import { MoonLoader } from 'halogenium'
 import React from 'react'
+import ToggleButton from 'react-toggle-button'
 
+import CandlestickChart from './components/Candlestick'
 import DigitRoll from './components/Digit'
 import LineChart from './components/LineChart'
-import { currencyFormatter, getDifference } from './formatter'
+import RangeButton from './components/RangeButton'
+import { Colors, Periods, PeriodsLabels } from './constants'
+import { currencyFormatter, getDifference, pastPeriodLabel } from './formatter'
 
 import type { RootProps, DataPoint } from './types'
-import CandlestickChart from './components/Candlestick'
 
 export { RootProps, DataPoint }
 
 const Package: React.FC<RootProps> = ({
   data,
   loading,
+  light = false,
   onRange,
   stockName,
   candlestick,
@@ -57,42 +61,31 @@ const Package: React.FC<RootProps> = ({
   )
 
   const ranges = [
-    { label: '1D', value: 15 },
-    { label: '1W', value: 60 },
-    { label: '1M', value: 15 * 32 },
-    { label: '3M', value: 15 * 96 },
+    { label: PeriodsLabels.ONE_DAY, value: Periods.ONE_DAY },
+    { label: PeriodsLabels.ONE_WEEK, value: Periods.ONE_WEEK },
+    { label: PeriodsLabels.ONE_MONTH, value: Periods.ONE_MONTH },
+    { label: PeriodsLabels.THREE_MONTH, value: Periods.THREE_MONTH },
+    { label: PeriodsLabels.ALL, value: Periods.ALL },
   ]
 
   const rangeButtons = ranges.map((r, i) => {
     return (
-      <button
-        type="button"
-        key={i}
-        className={`range-buttons ${range === r.value ? 'selected' : ''}`}
-        onClick={() => onSetRange(r.value)}
-      >
+      <RangeButton key={i} selected={range === r.value} onClick={() => onSetRange(r.value)}>
         {r.label}
-      </button>
+      </RangeButton>
     )
   })
 
   const typeButtons = (
-    <>
-      <button
-        type="button"
-        className={`range-buttons ${!isCandlestick ? 'selected' : ''}`}
-        onClick={() => changeType(false)}
-      >
-        Line
-      </button>
-      <button
-        type="button"
-        className={`range-buttons ${isCandlestick ? 'selected' : ''}`}
-        onClick={() => changeType(true)}
-      >
-        Candlestick
-      </button>
-    </>
+    <div className="toggle-candle">
+      <span>Candlestick</span>
+      <ToggleButton
+        value={isCandlestick}
+        onToggle={(value) => {
+          changeType(!value)
+        }}
+      />
+    </div>
   )
 
   if (loading) {
@@ -103,10 +96,10 @@ const Package: React.FC<RootProps> = ({
     )
   }
 
-  const difference = getDifference(activePriceRaw, maxPriceRaw, closePrice)
+  const difference = getDifference(activePriceRaw, maxPriceRaw, closePrice) || ''
 
   const chart = isCandlestick ? (
-    <CandlestickChart onDataHover={onDataHover} data={data || []} />
+    <CandlestickChart range={range} onDataHover={onDataHover} data={data || []} />
   ) : (
     <LineChart
       closePrice={closePrice && range === 15 ? closePrice : null}
@@ -114,11 +107,12 @@ const Package: React.FC<RootProps> = ({
       days={range === 60}
       onDataHover={onDataHover}
       range={range}
+      light={light}
     />
   )
 
   return (
-    <div className="sparkline-chart">
+    <div className={`sparkline-chart ${light ? 'light' : ''}`}>
       <div className="stock-chart">
         <div className="chart">
           <div className="chart-header">
@@ -128,7 +122,13 @@ const Package: React.FC<RootProps> = ({
               <DigitRoll num={activePrice || maxPrice} />
             </div>
             <div className="">
-              <span>{difference}</span>
+              <span
+                style={{
+                  color: difference.startsWith('-') ? Colors.RED : Colors.GREEN,
+                }}
+              >
+                {difference} {pastPeriodLabel(range)}
+              </span>
             </div>
             <div className="percent-change">
               <span className="range" />

@@ -4,9 +4,11 @@ import findLastIndex from 'ramda/src/findLastIndex'
 import * as React from 'react'
 import { Customized, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
+import { Add, Colors, Subtract } from '../constants'
 import { numberFormatter } from '../formatter'
 import { avgLine, chartLine, fillDay } from './chartUtils'
 import ClosePriceLine from './ClosePriceLine'
+import CustomizedColor from './CustomizedColor'
 import CustomizedCursor from './CustomizedCursor'
 
 import type { DataPoint } from '../types'
@@ -15,20 +17,23 @@ type Props = {
   data: DataPoint[]
 
   range?: number | null
+  light?: boolean
   onDataHover?: (value: number | null) => void
   days?: boolean
   closePrice?: number | null
 }
 
-const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) => {
+const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, light }) => {
   const [periodStart, setPeriodStart] = React.useState(0)
   const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100)
 
   let max = +numberFormatter.format(
-    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) * 1.02
+    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
+      Add.TWO_PERCENT
   )
   let min = +numberFormatter.format(
-    data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) * 0.98
+    data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) *
+      Subtract.TWO_PERCENT
   )
 
   if (closePrice) {
@@ -48,7 +53,9 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
     lines.push(avgLine())
   }
 
-  lines.push(chartLine('high', 'url(#colorUv)'))
+  lines.push(
+    chartLine('high', 'url(#colorUv)', light ? Colors.DOT_WHITE_STROKE : Colors.DOT_BLACK_STROKE)
+  )
 
   React.useEffect(() => {
     setPeriodStart(0)
@@ -105,14 +112,11 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range }) 
         {closePrice ? <Customized value={closePrice} component={ClosePriceLine} /> : null}
         <Tooltip cursor={<CustomizedCursor range={range} stroke="#777" />} content={<div />} />
         <defs>
-          <linearGradient id="colorUv" x1="0%" y1="0" x2="100%" y2="0">
-            <stop offset={`${0}%`} stopColor="#0e5c43" />
-            <stop offset={`${periodStart}%`} stopColor="#0e5c43" />
-            <stop offset={`${periodStart}%`} stopColor="#21ce99" />
-            <stop offset={`${periodEnd}%`} stopColor="#21ce99" />
-            <stop offset={`${periodEnd}%`} stopColor="#0e5c43" />
-            <stop offset={`${100}%`} stopColor="#0e5c43" />
-          </linearGradient>
+          <CustomizedColor
+            periodStart={periodStart}
+            periodEnd={periodEnd}
+            inactiveColor={light ? Colors.LINE_CHART_INACTIVE_LIGHT : Colors.LINE_CHART_INACTIVE}
+          />
         </defs>
         {lines.map((line, idx) => (
           <Line key={idx} {...(line as any)} />
