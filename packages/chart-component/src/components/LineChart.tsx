@@ -5,7 +5,6 @@ import * as React from 'react'
 import { Customized, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { Add, Colors, Subtract } from '../constants'
-import { numberFormatter } from '../formatter'
 import { avgLine, chartLine, fillDay } from './chartUtils'
 import ClosePriceLine from './ClosePriceLine'
 import CustomizedColor from './CustomizedColor'
@@ -27,14 +26,13 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, li
   const [periodStart, setPeriodStart] = React.useState(0)
   const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100)
 
-  let max = +numberFormatter.format(
+  let max =
     data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
-      Add.TWO_PERCENT
-  )
-  let min = +numberFormatter.format(
+    Add.TWO_PER_MILLE
+
+  let min =
     data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) *
-      Subtract.TWO_PERCENT
-  )
+    Subtract.TWO_PER_MILLE
 
   if (closePrice) {
     min = Math.min(min, closePrice)

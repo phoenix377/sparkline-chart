@@ -38,7 +38,9 @@ function App() {
   const [darkMode, setDarkMode] = React.useState<boolean>(true);
   const [isCandlestick, setIsCandlestick] = React.useState<boolean>(false);
 
+  // const stockName = "AWFFN";
   const stockName = "CS50";
+  // const stockName = "SWC";
 
   const { data } = useFetch<HistoryResponse>(
     `https://keyvanafunctions.azurewebsites.net/api/GetItemHistory?interval=${

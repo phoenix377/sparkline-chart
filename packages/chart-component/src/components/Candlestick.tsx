@@ -3,7 +3,6 @@ import * as React from 'react'
 import Chart from 'react-apexcharts'
 
 import { Add, Subtract } from '../constants'
-import { numberFormatter } from '../formatter'
 import { getCandlestickOptions, minimalUnit } from './chartUtils'
 
 import type { DataPoint } from '../types'
@@ -19,14 +18,13 @@ type Props = {
 const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range }) => {
   const [series, setSeries] = React.useState<any[]>([])
 
-  const max = +numberFormatter.format(
-    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
-      Add.TWO_PERCENT
-  )
-  const min = +numberFormatter.format(
-    data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) *
-      Subtract.TWO_PERCENT
-  )
+  const max =
+    data.reduce((highest, current) => Math.max(highest, current.open), data[0]?.open || 0) *
+    Add.TWO_PER_MILLE
+
+  const min =
+    data.reduce((lowest, current) => Math.min(lowest, current.close), data[0]?.close || 0) *
+    Subtract.TWO_PER_MILLE
 
   let minDate: number | null = null
   let maxDate: number | null = null
