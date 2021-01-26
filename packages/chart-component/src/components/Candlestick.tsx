@@ -2,7 +2,7 @@ import moment from 'moment'
 import * as React from 'react'
 import Chart from 'react-apexcharts'
 
-import { Add, Subtract } from '../constants'
+import { Add, POINTS_PER_DAY, Subtract } from '../constants'
 import { fillDay, getCandlestickOptions, minimalUnit } from './chartUtils'
 
 import type { DataPoint } from '../types'
@@ -30,15 +30,13 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
   let minDate: number | null = null
   let maxDate: number | null = null
 
-  // if (data.length < 50) {
   minDate =
-    data.reduce((lowest, current) => Math.min(lowest, current.date), data[0]?.date || 0) -
+    series.reduce((lowest, current) => Math.min(lowest, current.date), data[0]?.date || 0) -
     minimalUnit(range || 0, data.length)
 
   maxDate =
-    data.reduce((highest, current) => Math.max(highest, current.date), data[0]?.date || 0) +
+    series.reduce((highest, current) => Math.max(highest, current.date), data[0]?.date || 0) +
     minimalUnit(range || 0, data.length)
-  // }
 
   const onMove = React.useCallback(
     (idx) => {
@@ -58,7 +56,7 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
 
   React.useEffect(() => {
     let temp = data
-    if (range === 15 && temp.length < 96) {
+    if (range === 15 && temp.length < POINTS_PER_DAY) {
       temp = fillDay(temp)
     }
     setSeries(

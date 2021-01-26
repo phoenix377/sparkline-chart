@@ -4,7 +4,7 @@ import findLastIndex from 'ramda/src/findLastIndex'
 import * as React from 'react'
 import { Customized, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { Add, Colors, Subtract } from '../constants'
+import { Add, Colors, POINTS_PER_DAY, Subtract } from '../constants'
 import { avgLine, chartLine, fillDay } from './chartUtils'
 import ClosePriceLine from './ClosePriceLine'
 import CustomizedColor from './CustomizedColor'
@@ -52,7 +52,7 @@ const Chart: React.FC<Props> = ({
 
   let dataWAvg = data.map((d, idx) => ({ ...d, idx }))
 
-  if (range === 15 && dataWAvg.length < 96) {
+  if (range === 15 && dataWAvg.length < POINTS_PER_DAY) {
     dataWAvg = fillDay(dataWAvg)
   }
 
