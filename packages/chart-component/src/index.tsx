@@ -25,6 +25,8 @@ const Package: React.FC<RootProps> = ({
   onCandlestick,
   range = 15,
   closePrice = 0,
+  height = 275,
+  showName = false,
 }) => {
   const onSetRange = React.useCallback(
     (v) => {
@@ -36,8 +38,11 @@ const Package: React.FC<RootProps> = ({
   const [activePrice, setActivePrice] = React.useState<string | null>(null)
   const [activePriceRaw, setActivePriceRaw] = React.useState<number | null>(null)
   const [isCandlestick, setIsCandlestick] = React.useState<boolean>(candlestick || false)
-  const maxPriceRaw: number = data?.[data.length - 1]?.high || 0
-  const maxPrice = currencyFormatter.format(maxPriceRaw)
+  const lastPriceRaw: number = data?.[data.length - 1]?.high || 0
+  const firstPriceRaw: number = data?.[0]?.high || 0
+  const maxPrice = currencyFormatter.format(lastPriceRaw)
+
+  const negativeTrend = lastPriceRaw < firstPriceRaw
 
   const changeType = React.useCallback(
     (isC) => {
@@ -70,7 +75,12 @@ const Package: React.FC<RootProps> = ({
 
   const rangeButtons = ranges.map((r, i) => {
     return (
-      <RangeButton key={i} selected={range === r.value} onClick={() => onSetRange(r.value)}>
+      <RangeButton
+        key={i}
+        selected={range === r.value}
+        onClick={() => onSetRange(r.value)}
+        negative={negativeTrend}
+      >
         {r.label}
       </RangeButton>
     )
@@ -96,10 +106,10 @@ const Package: React.FC<RootProps> = ({
     )
   }
 
-  const difference = getDifference(activePriceRaw, maxPriceRaw, closePrice) || ''
+  const difference = getDifference(activePriceRaw, lastPriceRaw, closePrice) || ''
 
   const chart = isCandlestick ? (
-    <CandlestickChart range={range} onDataHover={onDataHover} data={data || []} />
+    <CandlestickChart range={range} onDataHover={onDataHover} data={data || []} height={height} />
   ) : (
     <LineChart
       closePrice={closePrice && range === 15 ? closePrice : null}
@@ -108,6 +118,8 @@ const Package: React.FC<RootProps> = ({
       onDataHover={onDataHover}
       range={range}
       light={light}
+      height={height}
+      negativeTrend={negativeTrend}
     />
   )
 
@@ -116,19 +128,21 @@ const Package: React.FC<RootProps> = ({
       <div className="stock-chart">
         <div className="chart">
           <div className="chart-header">
-            <h1 className="company-name">{stockName}</h1>
+            {showName ? <h1 className="company-name">{stockName}</h1> : null}
             <div className="stock-chart-price">
               <div className="stock-chart-price--currency">$</div>
               <DigitRoll num={activePrice || maxPrice} />
             </div>
-            <div className="">
+            <div className="difference-indicator-container">
               <span
+                className="difference-indicator"
                 style={{
                   color: difference.startsWith('-') ? Colors.RED : Colors.GREEN,
                 }}
               >
-                {difference} {pastPeriodLabel(range)}
+                {difference}
               </span>
+              <span className="difference-indicator-period"> {pastPeriodLabel(range)}</span>
             </div>
             <div className="percent-change">
               <span className="range" />

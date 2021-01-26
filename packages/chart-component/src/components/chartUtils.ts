@@ -14,26 +14,47 @@ export const dateFormat = (range: number) => {
   }
 }
 
-export const minimalUnit = (range: number) => {
-  switch (range) {
-    case Periods.ONE_DAY:
-      return HOUR / 4
-    case Periods.ONE_WEEK:
-      return DAY / 2
-    case Periods.ONE_MONTH:
-      return 2 * DAY
-    case Periods.THREE_MONTH:
-      return 1 * DAY
-    case Periods.ALL:
-      return 1 * DAY
-    default:
-      return 0
+export const minimalUnit = (range: number, length: number) => {
+  if (length < 40) {
+    switch (range) {
+      case Periods.ONE_DAY:
+        return HOUR / 4
+      case Periods.ONE_WEEK:
+        return DAY / 4
+      case Periods.ONE_MONTH:
+        return 2.1 * DAY
+      case Periods.THREE_MONTH:
+        return 2.1 * DAY
+      case Periods.ALL:
+        return 2.1 * DAY
+      default:
+        return 0
+    }
+  } else {
+    switch (range) {
+      case Periods.ONE_DAY:
+        return HOUR * 0.75
+      case Periods.ONE_WEEK:
+        return DAY / 4
+      case Periods.ONE_MONTH:
+        return DAY * 0.75
+      case Periods.THREE_MONTH:
+        return DAY * 0.75
+      case Periods.ALL:
+        return DAY * 0.75
+      default:
+        return 0
+    }
   }
 }
 
 export const fillDay = (initial) => {
   const dataWAvg = [...initial]
-  const lastDate = dataWAvg[dataWAvg.length - 1].date
+  const lastDate =
+    dataWAvg?.[dataWAvg.length - 2]?.date ||
+    dataWAvg?.[dataWAvg.length - 1]?.date ||
+    moment.utc().unix()
+
   let i = 1
   while (dataWAvg.length < POINTS_PER_DAY) {
     dataWAvg.push({
@@ -71,15 +92,7 @@ export const avgLine = (dataKey = 'closePrice') => ({
   type: 'monotone',
 })
 
-export const getCandlestickOptions = ({
-  endDate,
-  height = 260,
-  max,
-  min,
-  onIndexHover,
-  range,
-  startDate,
-}) => {
+export const getCandlestickOptions = ({ endDate, max, min, onIndexHover, range, startDate }) => {
   return {
     chart: {
       events: {
@@ -88,8 +101,7 @@ export const getCandlestickOptions = ({
         },
       },
       type: 'candlestick',
-      height,
-      width: '90%',
+      width: '100%',
       toolbar: {
         show: false,
       },
@@ -116,7 +128,10 @@ export const getCandlestickOptions = ({
       tooltip: {
         enabled: true,
         formatter: (date) => {
-          return moment.unix(date).utc().format(dateFormat(range))
+          return moment
+            .unix(date / 1000)
+            .utc()
+            .format(dateFormat(range))
         },
       },
     },

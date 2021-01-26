@@ -10,7 +10,19 @@
   $theme-background: white;
   $theme-color: black;
   $tag-background: #182b27;
-  $tag-text: #21ce99;
+  $tag-text: rgb(0, 183, 70);
+  $tag-text-negative: rgb(239, 64, 60);
+
+  .difference-indicator-container {
+    margin-top: 0.5rem;
+    .difference-indicator {
+      transition: color 0.2s;
+    }
+    .difference-indicator-period {
+      color: #777;
+      font-size: smaller;
+    }
+  }
 
   .toggle-candle {
     display: flex;
@@ -76,11 +88,17 @@
     outline: none;
     &.selected {
       color: $tag-text !important;
+      &.negative {
+        color: $tag-text-negative !important;
+      }
     }
   }
 
   .range-buttons:hover {
     color: $tag-text !important;
+    &.negative {
+      color: $tag-text-negative !important;
+    }
     cursor: pointer;
   }
 

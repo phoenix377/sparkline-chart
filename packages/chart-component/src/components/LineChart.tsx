@@ -20,11 +20,22 @@ type Props = {
   onDataHover?: (value: number | null) => void
   days?: boolean
   closePrice?: number | null
+  height?: number
+  negativeTrend?: boolean
 }
 
-const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, light }) => {
+const Chart: React.FC<Props> = ({
+  data,
+  onDataHover,
+  days,
+  closePrice,
+  range,
+  light,
+  height = 275,
+  negativeTrend = false,
+}) => {
   const [periodStart, setPeriodStart] = React.useState(0)
-  const [periodEnd, setPeriodEnd] = React.useState(days ? 0 : 100)
+  const [periodEnd, setPeriodEnd] = React.useState(100)
 
   let max =
     data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
@@ -52,12 +63,17 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, li
   }
 
   lines.push(
-    chartLine('high', 'url(#colorUv)', light ? Colors.DOT_WHITE_STROKE : Colors.DOT_BLACK_STROKE)
+    chartLine(
+      'high',
+      'url(#colorUv)',
+      light ? Colors.DOT_WHITE_STROKE : Colors.DOT_BLACK_STROKE,
+      negativeTrend ? Colors.LINE_CHART_NEGATIVE : Colors.LINE_CHART
+    )
   )
 
   React.useEffect(() => {
     setPeriodStart(0)
-    setPeriodEnd(days ? 0 : 100)
+    setPeriodEnd(100)
   }, [days])
 
   const onMove = React.useCallback(
@@ -68,21 +84,31 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, li
         const initial = moment(e?.activePayload?.[0]?.payload?.date * 1000)
           .utc()
           .startOf('day')
-          .unix()
-        const firstIndex: number = findIndex(
-          (d: DataPoint) =>
-            moment(d.date * 1000)
-              .utc()
-              .startOf('day')
-              .unix() === initial,
-          dataWAvg
-        )
+
+        let initialUnix = initial.unix()
+
+        const firstPoint = moment(e?.activePayload?.[0]?.payload?.date * 1000).isSame(initial)
+
         const lastIndex: number = findLastIndex(
           (d: DataPoint) =>
             moment(d.date * 1000)
               .utc()
               .startOf('day')
-              .unix() === initial,
+              .unix() === initialUnix,
+          dataWAvg
+        )
+
+        if (firstPoint) {
+          initial.subtract(1, 'day')
+          initialUnix = initial.unix()
+        }
+
+        const firstIndex: number = findIndex(
+          (d: DataPoint) =>
+            moment(d.date * 1000)
+              .utc()
+              .startOf('day')
+              .unix() === initialUnix,
           dataWAvg
         )
 
@@ -96,30 +122,43 @@ const Chart: React.FC<Props> = ({ data, onDataHover, days, closePrice, range, li
   const onLeave = React.useCallback(() => {
     onDataHover?.(null)
     setPeriodStart(0)
-    setPeriodEnd(days ? 0 : 100)
-  }, [days, onDataHover, setPeriodStart, setPeriodEnd])
+    setPeriodEnd(100)
+  }, [onDataHover, setPeriodStart, setPeriodEnd])
+
+  const activeColor = negativeTrend ? Colors.LINE_CHART_NEGATIVE : Colors.LINE_CHART
+  // eslint-disable-next-line no-nested-ternary
+  const inactiveColor = light
+    ? negativeTrend
+      ? Colors.LINE_CHART_NEGATIVE_INACTIVE_LIGHT
+      : Colors.LINE_CHART_INACTIVE_LIGHT
+    : negativeTrend
+    ? Colors.LINE_CHART_NEGATIVE_INACTIVE
+    : Colors.LINE_CHART_INACTIVE
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height={height}>
       <LineChart
         onMouseMove={onMove}
         onMouseLeave={onLeave}
         data={dataWAvg}
         margin={{ top: 25, bottom: 25 }}
       >
-        {closePrice ? <Customized value={closePrice} component={ClosePriceLine} /> : null}
+        {closePrice ? (
+          <Customized key={range} range={range} value={closePrice} component={ClosePriceLine} />
+        ) : null}
         <Tooltip cursor={<CustomizedCursor range={range} stroke="#777" />} content={<div />} />
         <defs>
           <CustomizedColor
             periodStart={periodStart}
             periodEnd={periodEnd}
-            inactiveColor={light ? Colors.LINE_CHART_INACTIVE_LIGHT : Colors.LINE_CHART_INACTIVE}
+            color={activeColor}
+            inactiveColor={inactiveColor}
           />
         </defs>
         {lines.map((line, idx) => (
           <Line key={idx} {...(line as any)} />
         ))}
-        <XAxis hide dataKey="date" />
+        <XAxis hide dataKey="date" padding={{ left: 10, right: 10 }} />
         <YAxis hide domain={[min, max]} />
       </LineChart>
     </ResponsiveContainer>

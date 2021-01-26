@@ -80,6 +80,7 @@ function App() {
         range={range}
         onRange={setRange}
         closePrice={mappedData?.[0]?.close}
+        height={320}
       />
     </div>
   );

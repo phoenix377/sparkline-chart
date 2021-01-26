@@ -18,12 +18,12 @@ export const number2Formatter = new Intl.NumberFormat('en-IN', {
 
 export const getDifference = (
   activePriceRaw: number | null,
-  maxPriceRaw: number,
+  lastPriceRaw: number,
   closePrice: number
 ): string => {
   let difference: string | null = null
-  const differenceRaw = (activePriceRaw || maxPriceRaw) - closePrice
-  const differencePercentRaw = ((activePriceRaw || maxPriceRaw) / closePrice) * 100 - 100
+  const differenceRaw = (activePriceRaw || lastPriceRaw) - closePrice
+  const differencePercentRaw = ((activePriceRaw || lastPriceRaw) / closePrice) * 100 - 100
   const differencePercent = `${differencePercentRaw > 0 ? '+' : ''}${number2Formatter.format(
     differencePercentRaw || 0
   )}%`

@@ -11,6 +11,7 @@ export type RootProps = {
   data: DataPoint[]
   stockName: string
 
+  height?: number
   light?: boolean
   candlestick?: boolean
   onCandlestick?: (isCandlestick: boolean) => any | Promise<any>
@@ -18,4 +19,5 @@ export type RootProps = {
   loading?: boolean
   onRange?: (range: number) => any | Promise<any>
   range?: number
+  showName?: boolean
 }

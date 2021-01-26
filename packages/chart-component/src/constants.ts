@@ -20,19 +20,21 @@ export enum PastPeriodNames {
   ONE_WEEK = 'PAST WEEK',
   ONE_MONTH = 'PAST MONTH',
   THREE_MONTH = 'PAST 3 MONTHS',
-  DEFAULT = '',
+  DEFAULT = 'ALL TIME',
 }
 
 export enum Colors {
   RED = 'rgb(239, 64, 60)',
   GREEN = 'rgb(0, 183, 70)',
-  LINE_CHART = '#21ce99',
-  LINE_CHART_INACTIVE_LIGHT = '#61ffcf',
+  LINE_CHART = 'rgb(0, 183, 70)',
+  LINE_CHART_INACTIVE_LIGHT = '#B7EFB7',
   LINE_CHART_INACTIVE = '#0e5c43',
+  LINE_CHART_NEGATIVE = 'rgb(239, 64, 60)',
+  LINE_CHART_NEGATIVE_INACTIVE_LIGHT = '#FFCDB7',
+  LINE_CHART_NEGATIVE_INACTIVE = '#662000',
   DOT_BLACK_STROKE = '#1b1b1d',
   DOT_WHITE_STROKE = '#ffffff',
 }
-
 export enum DateFormats {
   LT = 'LT',
   MDLT = 'MMM D, LT',
