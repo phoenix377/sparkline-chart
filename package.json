@@ -1,14 +1,67 @@
 {
-  "name": "sparkline",
+  "name": "@sparkline/chart",
   "version": "1.0.0",
-  "main": "index.js",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/phoenix377/sparkline-chart",
-    "directory": "packages/chart-component"
+  "description": "Chart Component",
+  "author": "",
+  "repository": "",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
   },
-  "workspaces": [
-    "packages/*"
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "lint": "eslint . --ext ts --ext tsx --ext js"
+  },
+  "dependencies": {
+    "@react-hook/throttle": "^2.2.0",
+    "apexcharts": "^3.23.1",
+    "d3-shape": "^2.0.0",
+    "moment": "^2.29.1",
+    "ramda": "^0.27.1",
+    "react-apexcharts": "^1.3.7",
+    "react-toggle-button": "^2.2.0",
+    "recharts": "^2.0.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "@types/d3-shape": "^2.0.0",
+    "@types/halogenium": "^2.3.0",
+    "@types/ramda": "^0.27.34",
+    "@types/react": "^16.14.2",
+    "@types/react-dom": "^16.9.10",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "babel-core": "^6.26.3",
+    "babel-runtime": "^6.26.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.3",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "prettier": "^2.2.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "rollup": "^1.32.1",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "typescript": "^4.1.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "typescript",
+    "npm"
   ]
 }
