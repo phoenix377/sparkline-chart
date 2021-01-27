@@ -38,8 +38,8 @@ const Package: React.FC<RootProps> = ({
   const [activePrice, setActivePrice] = React.useState<string | null>(null)
   const [activePriceRaw, setActivePriceRaw] = React.useState<number | null>(null)
   const [isCandlestick, setIsCandlestick] = React.useState<boolean>(candlestick || false)
-  const lastPriceRaw: number = data?.[data.length - 1]?.high || 0
-  const firstPriceRaw: number = data?.[0]?.high || 0
+  const lastPriceRaw: number = data?.[data.length - 1]?.close || 0
+  const firstPriceRaw: number = data?.[0]?.close || 0
   const maxPrice = currencyFormatter.format(lastPriceRaw)
 
   const negativeTrend = lastPriceRaw < firstPriceRaw

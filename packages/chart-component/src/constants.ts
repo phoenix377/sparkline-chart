@@ -44,11 +44,13 @@ export enum DateFormats {
 export enum Add {
   TWO_PERCENT = 1.02,
   TWO_PER_MILLE = 1.002,
+  FOUR_PER_MILLE = 1.004,
 }
 
 export enum Subtract {
   TWO_PERCENT = 0.98,
   TWO_PER_MILLE = 0.998,
+  FOUR_PER_MILLE = 0.996,
 }
 
 export const POINTS_PER_DAY = 96

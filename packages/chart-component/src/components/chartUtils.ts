@@ -127,9 +127,11 @@ export const getCandlestickOptions = ({ endDate, max, min, onIndexHover, range, 
       type: 'datetime',
       tooltip: {
         enabled: true,
-        formatter: (date) => {
+        formatter: (date, context) => {
+          const { dataPointIndex } = context
+          const actualDate = context?.w?.config?.series?.[0]?.data?.[dataPointIndex]?.temp
           return moment
-            .unix(date / 1000)
+            .unix(actualDate || date / 1000)
             .utc()
             .format(dateFormat(range))
         },

@@ -38,11 +38,11 @@ const Chart: React.FC<Props> = ({
   const [periodEnd, setPeriodEnd] = React.useState(100)
 
   let max =
-    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
+    data.reduce((highest, current) => Math.max(highest, current.close), data[0]?.close || 0) *
     Add.TWO_PER_MILLE
 
   let min =
-    data.reduce((lowest, current) => Math.min(lowest, current.high), data[0]?.high || 0) *
+    data.reduce((lowest, current) => Math.min(lowest, current.close), data[0]?.close || 0) *
     Subtract.TWO_PER_MILLE
 
   if (closePrice) {
