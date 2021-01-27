@@ -1,6 +1,5 @@
 import './styles.scss'
 
-import { MoonLoader } from 'halogenium'
 import React from 'react'
 import ToggleButton from 'react-toggle-button'
 
@@ -17,7 +16,6 @@ export { RootProps, DataPoint }
 
 const Package: React.FC<RootProps> = ({
   data,
-  loading,
   light = false,
   onRange,
   stockName,
@@ -112,14 +110,6 @@ const Package: React.FC<RootProps> = ({
       />
     </div>
   )
-
-  if (loading) {
-    return (
-      <div className="sparkline-chart">
-        <MoonLoader className="loading-icon" color="#26A65B" size="20px" />
-      </div>
-    )
-  }
 
   const difference = getDifference(activePriceRaw, lastPriceRaw, closePrice) || ''
 
