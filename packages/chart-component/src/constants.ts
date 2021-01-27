@@ -54,6 +54,7 @@ export enum Subtract {
 }
 
 export const POINTS_PER_DAY = 96
+export const SECOND = 1000
 export const MINUTE = 60
 export const HOUR = 60 * MINUTE
 export const DAY = HOUR * 24

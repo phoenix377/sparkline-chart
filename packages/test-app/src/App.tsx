@@ -39,10 +39,10 @@ function App() {
   const [isCandlestick, setIsCandlestick] = React.useState<boolean>(false);
 
   // const stockName = "AWFFN";
-  const stockName = "CS50";
-  // const stockName = "SWC";
+  // const stockName = "CS50";
+  const stockName = "SWC";
 
-  const { data } = useFetch<HistoryResponse>(
+  const { data, refetch, error } = useFetch<HistoryResponse>(
     `https://keyvanafunctions.azurewebsites.net/api/GetItemHistory?interval=${
       // TODO: 42 is a fake number received from SparklineChart
       range === 42 ? 15 * 96 : range
@@ -62,7 +62,13 @@ function App() {
   );
 
   const mappedData = mapper(data) || [];
-
+  if (error) {
+    return (
+      <div className={`App ${darkMode ? "dark" : ""}`}>
+        <div className="">Error: {error}</div>
+      </div>
+    );
+  }
   return (
     <div className={`App ${darkMode ? "dark" : ""}`}>
       <div className="light-switch-container">
@@ -81,6 +87,8 @@ function App() {
         onRange={setRange}
         closePrice={mappedData?.[0]?.close}
         height={320}
+        interval={10}
+        refetch={refetch}
       />
     </div>
   );

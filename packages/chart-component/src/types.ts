@@ -11,6 +11,8 @@ export type RootProps = {
   data: DataPoint[]
   stockName: string
 
+  refetch?: () => any | Promise<any>
+  interval?: number
   height?: number
   light?: boolean
   candlestick?: boolean

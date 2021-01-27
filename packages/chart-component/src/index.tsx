@@ -8,7 +8,7 @@ import CandlestickChart from './components/Candlestick'
 import DigitRoll from './components/Digit'
 import LineChart from './components/LineChart'
 import RangeButton from './components/RangeButton'
-import { Colors, Periods, PeriodsLabels } from './constants'
+import { Colors, Periods, PeriodsLabels, SECOND } from './constants'
 import { currencyFormatter, getDifference, pastPeriodLabel } from './formatter'
 
 import type { RootProps, DataPoint } from './types'
@@ -27,7 +27,22 @@ const Package: React.FC<RootProps> = ({
   closePrice = 0,
   height = 275,
   showName = false,
+  interval = 4,
+  refetch = null,
 }) => {
+  React.useEffect(() => {
+    if (refetch) {
+      const timer = setInterval(() => {
+        refetch()
+      }, interval * SECOND)
+
+      return () => {
+        clearInterval(timer)
+      }
+    }
+    return () => null
+  }, [interval, refetch])
+
   const onSetRange = React.useCallback(
     (v) => {
       onRange?.(v)
