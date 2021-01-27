@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@sparkline/chart": "../",
+    "@sparkline/chart": "git+https://22a7297207f2a1be9859693f9d9b61423faa6ff7:x-oauth-basic@github.com/phoenix377/sparkline-chart.git",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
