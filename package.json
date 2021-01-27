@@ -12,7 +12,8 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "lint": "eslint . --ext ts --ext tsx --ext js"
+    "lint": "eslint . --ext ts --ext tsx --ext js",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@react-hook/throttle": "^2.2.0",
