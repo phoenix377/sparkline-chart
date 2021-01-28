@@ -21,4 +21,5 @@ export type RootProps = {
   onRange?: (range: number) => any | Promise<any>
   range?: number
   showName?: boolean
+  noCandlestick?: boolean
 }

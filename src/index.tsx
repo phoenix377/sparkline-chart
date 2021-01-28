@@ -27,6 +27,7 @@ const Package: React.FC<RootProps> = ({
   showName = false,
   interval = 4,
   refetch = null,
+  noCandlestick = false,
 }) => {
   React.useEffect(() => {
     if (refetch) {
@@ -99,7 +100,7 @@ const Package: React.FC<RootProps> = ({
     )
   })
 
-  const typeButtons = (
+  const typeButtons = noCandlestick ? null : (
     <div className="toggle-candle">
       <span>Candlestick</span>
       <ToggleButton
