@@ -12,7 +12,7 @@ import { currencyFormatter, getDifference, pastPeriodLabel } from './formatter'
 
 import type { RootProps, DataPoint } from './types'
 
-export { RootProps, DataPoint }
+export type { RootProps, DataPoint }
 
 const Package: React.FC<RootProps> = ({
   data,

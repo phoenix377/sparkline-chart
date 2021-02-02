@@ -62,10 +62,16 @@ const Chart: React.FC<Props> = ({
     lines.push(avgLine())
   }
 
+  const notSame = data.some((d) => d.close !== data[0].close)
+
   lines.push(
     chartLine(
-      'high',
-      'url(#colorUv)',
+      'close',
+      days && notSame
+        ? 'url(#colorUv)'
+        : negativeTrend
+        ? Colors.LINE_CHART_NEGATIVE
+        : Colors.LINE_CHART,
       light ? Colors.DOT_WHITE_STROKE : Colors.DOT_BLACK_STROKE,
       negativeTrend ? Colors.LINE_CHART_NEGATIVE : Colors.LINE_CHART
     )
@@ -78,7 +84,7 @@ const Chart: React.FC<Props> = ({
 
   const onMove = React.useCallback(
     (e: any) => {
-      const payload = e?.activePayload?.find((p) => p.name === 'high')
+      const payload = e?.activePayload?.find((p) => p.name === 'close')
       onDataHover?.(payload?.value || null)
       if (days) {
         const initial = moment(e?.activePayload?.[0]?.payload?.date * 1000)

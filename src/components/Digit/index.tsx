@@ -22,7 +22,7 @@ const Divider = ({ height }: any) => (
 const DigitRoll: React.FC<DigitRollProps> = ({
   num = '0',
   height = 3,
-  width = 1.25,
+  width = 1.2,
   delay = 0.2,
   className = '',
 }) => {
