@@ -13,6 +13,10 @@
   $tag-text: rgb(0, 183, 70);
   $tag-text-negative: rgb(239, 64, 60);
 
+  @media (max-width: 999px) {
+    margin: 0 5%;
+  }
+
   .difference-indicator-container {
     margin-top: 0.5rem;
     .difference-indicator {
