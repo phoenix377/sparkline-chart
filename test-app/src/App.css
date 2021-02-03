@@ -1,6 +1,9 @@
+@import url(https://fonts.googleapis.com/css?family=Livvic&display=swap);
+
 .App {
   position: relative;
   color: black;
+  padding: 0 2rem;
 }
 
 .App.dark {
@@ -14,6 +17,7 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
+  font-family: 'Livvic', sans-serif;
 }
 
 body.dark {

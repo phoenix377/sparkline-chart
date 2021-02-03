@@ -1,0 +1,32 @@
+.DigitRoll__Out {
+  position: relative;
+}
+
+.DigitRoll {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  overflow-y: hidden;
+  position: absolute;
+}
+
+.DigitRoll__Slice {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.DigitRoll__Cell {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.DigitRoll__Divider {
+  padding: 0;
+  margin-left: -2px;
+  display: flex;
+  align-items: center;
+}
