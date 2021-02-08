@@ -53,7 +53,7 @@ export enum Subtract {
   FOUR_PER_MILLE = 0.996,
 }
 
-export const POINTS_PER_DAY = 96
+export const POINTS_PER_DAY = 98
 export const SECOND = 1000
 export const MINUTE = 60
 export const HOUR = 60 * MINUTE
