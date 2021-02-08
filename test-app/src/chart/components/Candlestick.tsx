@@ -57,17 +57,21 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
   React.useEffect(() => {
     let temp = [...data]
 
-    const lastDate = moment.unix(temp[temp.length - 1].date).utc()
+    let lastDate = moment.unix(temp[temp.length - 1].date).utc()
     const lastDateOriginal = moment.unix(temp[temp.length - 1].date).utc()
 
-    if (range === Periods.ONE_DAY) {
-      lastDate.minutes(Math.ceil(lastDate.minutes() / 15) * 15)
-    } else if (range === Periods.ONE_WEEK) {
-      lastDate.endOf('hour').add(1, 'minute')
-    } else if (range === Periods.THREE_MONTH || range === Periods.ALL) {
-      lastDate.endOf('day').add(1, 'minute')
-    } else if (range === Periods.ONE_MONTH) {
-      lastDate.endOf('day').add(1, 'minute')
+    if (temp?.[temp.length - 2]?.date && temp?.[temp.length - 3]?.date) {
+      const lastDate1 = moment.unix(temp[temp.length - 2].date).unix()
+      const lastDate2 = moment.unix(temp[temp.length - 3].date).unix()
+      lastDate = moment.unix(lastDate1 - lastDate2 + lastDate1)
+    } else {
+      if (range === Periods.ONE_DAY) {
+        lastDate.minutes(Math.ceil(lastDate.minutes() / 15) * 15)
+      } else if (range === Periods.ONE_WEEK) {
+        lastDate.endOf('hour').add(1, 'minute')
+      } else if (range === Periods.THREE_MONTH || range === Periods.ALL) {
+        lastDate.startOf('day')
+      }
     }
 
     temp[temp.length - 1] = {

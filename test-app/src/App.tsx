@@ -85,7 +85,7 @@ function App() {
         data={mappedData}
         range={range}
         onRange={setRange}
-        closePrice={mappedData?.[0]?.close}
+        closePrice={mappedData?.[0]?.open}
         height={320}
         interval={10}
         refetch={refetch}
