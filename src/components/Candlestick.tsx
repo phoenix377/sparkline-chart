@@ -18,6 +18,7 @@ type Props = {
 
 const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 275 }) => {
   const [series, setSeries] = React.useState<any[]>([])
+  const isMobile = window?.screen?.width <= 480;
 
   const max =
     data.reduce((highest, current) => Math.max(highest, current.open), data[0]?.open || 0) *
@@ -32,11 +33,11 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
 
   minDate =
     series.reduce((lowest, current) => Math.min(lowest, current.temp), series[0]?.temp || 0) -
-    minimalUnit(range || 0, data.length)
+    minimalUnit(range || 0, data.length, isMobile)
 
   maxDate =
     series.reduce((highest, current) => Math.max(highest, current.temp), series[0]?.temp || 0) +
-    minimalUnit(range || 0, data.length)
+    minimalUnit(range || 0, data.length, isMobile)
 
   const onMove = React.useCallback(
     (idx) => {
@@ -46,6 +47,7 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
   )
 
   const options = getCandlestickOptions({
+    mobile: isMobile,
     onIndexHover: onMove,
     min,
     max,

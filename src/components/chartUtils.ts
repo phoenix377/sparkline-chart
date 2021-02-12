@@ -14,11 +14,15 @@ export const dateFormat = (range: number) => {
   }
 }
 
-export const minimalUnit = (range: number, length: number) => {
+export const minimalUnit = (range: number, length: number, isMobile?: boolean) => {
+  if (isMobile) {
+    return 0
+  }
+
   if (length < 40) {
     switch (range) {
       case Periods.ONE_DAY:
-        return HOUR / 4
+        return HOUR / 10
       case Periods.ONE_WEEK:
         return DAY / 4
       case Periods.ONE_MONTH:
@@ -92,7 +96,7 @@ export const avgLine = (dataKey = 'closePrice') => ({
   type: 'monotone',
 })
 
-export const getCandlestickOptions = ({ endDate, max, min, onIndexHover, range, startDate }) => {
+export const getCandlestickOptions = ({ mobile, endDate, max, min, onIndexHover, range, startDate }) => {
   return {
     chart: {
       events: {
@@ -111,6 +115,12 @@ export const getCandlestickOptions = ({ endDate, max, min, onIndexHover, range, 
     },
     grid: {
       show: false,
+      padding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      },
     },
     tooltip: {
       enabled: true,
@@ -122,6 +132,20 @@ export const getCandlestickOptions = ({ endDate, max, min, onIndexHover, range, 
       size: 1,
     },
     xaxis: {
+      axisTicks: {
+        height: 4,
+      },
+      labels: {
+        style: {
+          fontSize: mobile ? '11px' : '12px',
+        },
+        datetimeFormatter: {
+          year: 'yyyy',
+          month: mobile ? 'MMM' : "MMM 'yy",
+          day: mobile ? 'dd.MM' : 'dd MMM',
+          hour: 'HH:mm',
+        },
+      },
       min: startDate,
       max: endDate,
       type: 'datetime',
