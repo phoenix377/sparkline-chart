@@ -21,11 +21,11 @@ const CandlestickChart: React.FC<Props> = ({ data, onDataHover, range, height = 
   const isMobile = window?.screen?.width <= 480;
 
   const max =
-    data.reduce((highest, current) => Math.max(highest, current.open), data[0]?.open || 0) *
+    data.reduce((highest, current) => Math.max(highest, current.high), data[0]?.high || 0) *
     Add.FOUR_PER_MILLE
 
   const min =
-    data.reduce((lowest, current) => Math.min(lowest, current.close), data[0]?.close || 0) *
+    data.reduce((lowest, current) => Math.min(lowest, current.low), data[0]?.low || 0) *
     Subtract.FOUR_PER_MILLE
 
   let minDate: number | null = null
